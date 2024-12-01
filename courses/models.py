@@ -6,11 +6,15 @@ class Course(models.Model):
         verbose_name='course name'
     )
     description = models.TextField(
-        verbose_name='description'
+        verbose_name='description',
+        blank=True,
+        null=True,
     )
     preview = models.ImageField(
         upload_to='courses/preview',
-        verbose_name='Course preview'
+        verbose_name='Course preview',
+        blank=True,
+        null=True,
     )
     changed_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
