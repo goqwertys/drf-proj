@@ -38,7 +38,9 @@ class Lesson(models.Model):
     )
     preview = models.ImageField(
         upload_to='courses/preview',
-        verbose_name='Lesson preview'
+        verbose_name='Lesson preview',
+        blank=True,
+        null=True,
     )
     video_url = models.URLField(
         blank=True,
