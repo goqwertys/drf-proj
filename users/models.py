@@ -74,7 +74,7 @@ class Payment(models.Model):
     date = models.DateTimeField()
     course = models.ForeignKey('Course', on_delete=models.CASCADE, null=True, blank=True)
     lesson = models.ForeignKey('Lesson', on_delete=models.CASCADE, null=True, blank=True)
-    amount = models.FloatField()
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
     method = models.CharField(
         max_length=3,
         choices=METHOD_CHOISES,
