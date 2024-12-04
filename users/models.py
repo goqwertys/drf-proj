@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from phonenumber_field.modelfields import PhoneNumberField
+from rest_framework.exceptions import ValidationError
+
 
 class UserManager(BaseUserManager):
     """ Custom user model manager where email is the unique identifiers for authentication """
@@ -61,3 +63,42 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.email
+
+
+class Payment(models.Model):
+    METHOD_CHOISES = [
+        ('CRD', 'By card'),
+        ('CSH', 'By cash')
+    ]
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='user')
+    date = models.DateTimeField()
+    course = models.ForeignKey('Course', on_delete=models.CASCADE, null=True, blank=True)
+    lesson = models.ForeignKey('Lesson', on_delete=models.CASCADE, null=True, blank=True)
+    amount = models.FloatField()
+    method = models.CharField(
+        max_length=3,
+        choices=METHOD_CHOISES,
+        default='CRD',
+        verbose_name='payment method'
+    )
+
+    def __str__(self):
+        return f'{str(self.user)} - {str(self.date)} - {str(self.amount)}'
+
+    def clean(self):
+        if self.course and self.lesson:
+            raise ValidationError('Payment cannot be associated with both a course and a lesson.')
+
+        if not self.course and not self.lesson:
+            raise ValidationError('Payment must be associated with either a course or a lesson.')
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    def get_service(self):
+        return self.course or self.lesson
+
+    class Meta:
+        verbose_name = 'payment'
+        verbose_name_plural = 'payments'
