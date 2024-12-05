@@ -5,7 +5,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import viewsets, mixins
 from rest_framework.permissions import IsAuthenticated
+from django_filters import rest_framework as filters
 
+from .filters import PaymentFilter
 from .models import User, Payment
 from .serializers import UserRegistrationSerializer, UserProfileSerializer, PaymentSerializer
 
@@ -29,9 +31,10 @@ class UserProfileViewSet(mixins.RetrieveModelMixin,
     def get_object(self):
         return self.request.user
 
-class PaymentlListView(ListAPIView):
+class PaymentListView(ListAPIView):
     queryset = Payment.objects.all()
     serializer_class = PaymentSerializer
-    filter_backends = [SearchFilter, OrderingFilter]
+    filter_backends = [SearchFilter, OrderingFilter, filters.DjangoFilterBackend]
+    filterset_class = PaymentFilter
     search_fields = ['course__name', 'lesson__title', 'method']
     ordering_fields = ['date']
