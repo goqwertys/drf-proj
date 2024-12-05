@@ -3,6 +3,8 @@ from django.contrib.auth.models import AbstractUser, BaseUserManager
 from phonenumber_field.modelfields import PhoneNumberField
 from rest_framework.exceptions import ValidationError
 
+from courses.models import Course, Lesson
+
 
 class UserManager(BaseUserManager):
     """ Custom user model manager where email is the unique identifiers for authentication """
@@ -29,7 +31,6 @@ class UserManager(BaseUserManager):
         return self.create_user(email, password, **extra_fields)
 
 class User(AbstractUser):
-    """ User model """
     username = None
     email = models.EmailField(unique=True, verbose_name='email')
     phone_number = PhoneNumberField(
@@ -72,8 +73,8 @@ class Payment(models.Model):
     ]
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='user')
     date = models.DateTimeField()
-    course = models.ForeignKey('Course', on_delete=models.CASCADE, null=True, blank=True)
-    lesson = models.ForeignKey('Lesson', on_delete=models.CASCADE, null=True, blank=True)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, null=True, blank=True)
+    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, null=True, blank=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     method = models.CharField(
         max_length=3,
