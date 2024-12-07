@@ -1,35 +1,12 @@
-from rest_framework import status
 from rest_framework.filters import OrderingFilter, SearchFilter
-from rest_framework.generics import ListAPIView
-from rest_framework.response import Response
-from rest_framework.views import APIView
-from rest_framework import viewsets, mixins
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.generics import ListAPIView, CreateAPIView
 from django_filters import rest_framework as filters
+from rest_framework import serializers
 
 from .filters import PaymentFilter
 from .models import User, Payment
-from .serializers import UserRegistrationSerializer, UserProfileSerializer, PaymentSerializer
+from .serializers import PaymentSerializer, UserSerializer
 
-
-class UserRegistrationView(APIView):
-    def post(self, request):
-        serializer = UserRegistrationSerializer(data=request.data)
-        if serializer.is_valid():
-            user = serializer.save()
-            return Response({'message': 'User registered successfully'}, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-class UserProfileViewSet(mixins.RetrieveModelMixin,
-                         mixins.UpdateModelMixin,
-                         mixins.DestroyModelMixin,
-                         viewsets.GenericViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserProfileSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_object(self):
-        return self.request.user
 
 class PaymentListView(ListAPIView):
     queryset = Payment.objects.all()
@@ -38,3 +15,7 @@ class PaymentListView(ListAPIView):
     filterset_class = PaymentFilter
     search_fields = ['course__name', 'lesson__title', 'method']
     ordering_fields = ['date']
+
+class UserCreateAPIView(CreateAPIView):
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
