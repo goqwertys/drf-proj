@@ -1,33 +1,30 @@
 from rest_framework import serializers
-from django.contrib.auth import get_user_model
 
 from courses.serializers import CourseSerializer, LessonSerializer
-from users.models import Payment
+from users.models import Payment, User
 
-User = get_user_model()
 
-class UserRegistrationSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True)
-
+class UserSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, required=True)
     class Meta:
         model = User
-        fields = ['email', 'password', 'phone_number', 'city', 'avatar']
+        fields = ['id', 'email', 'password', 'phone_number', 'city', 'avatar', 'date_joined']
 
     def create(self, validated_data):
-        user = User.objects.create_user(
-            email=validated_data['email'],
-            password=validated_data['password'],
-            phone_number=validated_data.get('phone_number', None),
-            city=validated_data.get('city', None),
-            avatar=validated_data.get('avatar', None)
-        )
+        password = validated_data.pop('password')
+        user = User.objects.create_user(password=password, **validated_data)
         return user
 
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'email', 'phone_number', 'city', 'avatar']
-        read_only_fields = ['id']
+
+
+class UserUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['email', 'phone_number', 'city', 'avatar']
 
 
 class PaymentSerializer(serializers.ModelSerializer):
