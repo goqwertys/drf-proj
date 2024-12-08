@@ -15,6 +15,17 @@ class UserSerializer(serializers.ModelSerializer):
         user = User.objects.create_user(password=password, **validated_data)
         return user
 
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'email', 'phone_number', 'city', 'avatar']
+
+
+class UserUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['email', 'phone_number', 'city', 'avatar']
+
 
 class PaymentSerializer(serializers.ModelSerializer):
     course = serializers.SerializerMethodField()

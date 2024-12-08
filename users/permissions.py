@@ -1,4 +1,5 @@
 from rest_framework import permissions
+from rest_framework.decorators import permission_classes
 
 
 class IsModerator(permissions.BasePermission):
@@ -10,3 +11,10 @@ class IsOwner(permissions.BasePermission):
     """ Checks if the user is the owner of the object """
     def has_object_permission(self, request, view, obj):
         return obj.owner == request.user
+
+class IsOwnerOrReadOnly(permissions.BasePermission):
+    """ Custom permission to allow owners to edit their own profile. """
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        return obj == request.user
