@@ -1,7 +1,6 @@
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.generics import ListAPIView, CreateAPIView
 from django_filters import rest_framework as filters
-from rest_framework import serializers
 from rest_framework.permissions import AllowAny
 
 from .filters import PaymentFilter
