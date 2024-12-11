@@ -7,7 +7,7 @@ from courses.views import (
     LessonListApiView,
     LessonRetrieveApiView,
     LessonUpdateApiView,
-    LessonDestroyApiView
+    LessonDestroyApiView, SubscriptionAPIView
 )
 from courses.apps import CoursesConfig
 
@@ -23,5 +23,6 @@ urlpatterns = [
     path('lessons/<int:pk>/', LessonRetrieveApiView.as_view(), name='lesson_detail'),
     path('lessons/<int:pk>/update/', LessonUpdateApiView.as_view(), name='lesson_update'),
     path('lessons/<int:pk>/delete/', LessonDestroyApiView.as_view(), name='lesson_delete'),
+    path('subscriptions/', SubscriptionAPIView.as_view(), name='subscription-manage')
 ]
 urlpatterns += router.urls

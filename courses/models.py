@@ -73,3 +73,28 @@ class Lesson(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Subscription(models.Model):
+    user = models.ForeignKey(
+        get_user_model(),
+        on_delete=models.CASCADE,
+        verbose_name='user'
+    )
+    course = models.ForeignKey(
+        Course,
+        on_delete=models.CASCADE,
+        verbose_name='course'
+    )
+    is_active = models.BooleanField(
+        default=True,
+        verbose_name='is active'
+    )
+
+    class Meta:
+        verbose_name = 'Subscription'
+        verbose_name_plural = 'Subscriptions'
+        unique_together = ('user', 'course')
+
+    def __str__(self):
+        return f'{self.user.email} subscriber to {self.course.name}'
