@@ -1,12 +1,14 @@
 from rest_framework import serializers
 
 from courses.models import Course, Lesson
+from courses.validators import NoExternalLinkValidator
 
 
 class LessonSerializer(serializers.ModelSerializer):
     class Meta:
         model = Lesson
         fields = '__all__'
+        validators = [NoExternalLinkValidator(fields=['video_url'])]
 
 
 class CourseSerializer(serializers.ModelSerializer):
@@ -19,6 +21,4 @@ class CourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
         fields = ['id', 'name', 'description', 'preview', 'lesson_count', 'lessons', 'owner']
-
-
-
+        validators = [NoExternalLinkValidator(fields='description')]
