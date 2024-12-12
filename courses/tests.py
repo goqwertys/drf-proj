@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
-from courses.models import Course, Lesson
+from courses.models import Course, Lesson, Subscription
 
 User = get_user_model()
 
@@ -94,8 +94,8 @@ class LessonTestCase(APITestCase):
 
         response = self.client.put(url, data=updated_data)
 
-        print("Response status code:", response.status_code)
-        print("Response data:", response.data)
+        # print("Response status code:", response.status_code)
+        # print("Response data:", response.data)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['title'], 'Updated Lesson')
@@ -120,3 +120,58 @@ class LessonTestCase(APITestCase):
         response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(Lesson.objects.count(), 0)
+
+class SubscriptionAPITestCase(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            email='test@test.com',
+            password='testpassword'
+        )
+
+        self.course = Course.objects.create(
+            name='Test Course',
+            owner=self.user
+        )
+
+        self.client.force_authenticate(user=self.user)
+
+        self.url = reverse('courses:subscription-manage')
+
+    def test_create_subscription(self):
+        data = {
+            'course_id': self.course.id
+        }
+
+        response = self.client.post(self.url, data=data)
+
+        print(response.json())
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.assertEqual(response.data.get('message'), 'Subscription added')
+        self.assertTrue(Subscription.objects.filter(user=self.user, course=self.course).exists())
+
+    def test_delete_subscription(self):
+        Subscription.objects.create(user=self.user, course=self.course)
+
+        data = {
+            'course_id': self.course.id
+        }
+
+        response = self.client.post(self.url, data=data)
+
+        print(response.json())
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.assertEqual(response.data.get('message'), 'Subscription deleted')
+        self.assertFalse(Subscription.objects.filter(user=self.user, course=self.course).exists())
+
+    def test_create_subscription_for_nonexistent_course(self):
+        data = {
+            'course_id': 9999
+        }
+
+        response = self.client.post(self.url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
