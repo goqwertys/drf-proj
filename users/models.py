@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
+from django.db.models import URLField
 from phonenumber_field.modelfields import PhoneNumberField
 from rest_framework.exceptions import ValidationError
 
@@ -69,16 +70,48 @@ class Payment(models.Model):
         ('CRD', 'By card'),
         ('CSH', 'By cash')
     ]
-    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='user')
-    date = models.DateTimeField()
-    course = models.ForeignKey('courses.Course', on_delete=models.CASCADE, null=True, blank=True)
-    lesson = models.ForeignKey('courses.Lesson', on_delete=models.CASCADE, null=True, blank=True)
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name='user',
+        help_text='Please specify user'
+    )
+    date = models.DateTimeField(auto_now=True)
+    course = models.ForeignKey(
+        'courses.Course',
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True
+    )
+    lesson = models.ForeignKey(
+        'courses.Lesson',
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True
+    )
+    amount = models.DecimalField(
+        max_digits=10,
+        decimal_places=2
+    )
     method = models.CharField(
         max_length=3,
         choices=METHOD_CHOISES,
         default='CRD',
         verbose_name='payment method'
+    )
+    session_id = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        verbose_name='Session ID',
+        help_text='Please specify session id'
+    )
+    link = URLField(
+        max_length=400,
+        blank=True,
+        null=True,
+        verbose_name='Payment link',
+        help_text='Please specify payment link'
     )
 
     def __str__(self):
@@ -99,5 +132,5 @@ class Payment(models.Model):
         return self.course or self.lesson
 
     class Meta:
-        verbose_name = 'payment'
-        verbose_name_plural = 'payments'
+        verbose_name = 'Payment'
+        verbose_name_plural = 'Payments'
