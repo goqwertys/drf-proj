@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
-from django.db.models import URLField
+from django.db.models import URLField, CharField
 from phonenumber_field.modelfields import PhoneNumberField
 from rest_framework.exceptions import ValidationError
 
@@ -70,6 +70,11 @@ class Payment(models.Model):
         ('CRD', 'By card'),
         ('CSH', 'By cash')
     ]
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('success', 'Success'),
+        ('failed', 'Failed'),
+    ]
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -91,7 +96,8 @@ class Payment(models.Model):
     )
     amount = models.DecimalField(
         max_digits=10,
-        decimal_places=2
+        decimal_places=2,
+        default=0
     )
     method = models.CharField(
         max_length=3,
@@ -107,11 +113,17 @@ class Payment(models.Model):
         help_text='Please specify session id'
     )
     link = URLField(
-        max_length=400,
+        max_length=500,
         blank=True,
         null=True,
         verbose_name='Payment link',
         help_text='Please specify payment link'
+    )
+    status = CharField(
+        max_length=10,
+        choices=STATUS_CHOICES,
+        default='pending',
+        verbose_name='Payment status'
     )
 
     def __str__(self):
