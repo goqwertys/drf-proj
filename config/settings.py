@@ -125,3 +125,5 @@ SIMPLE_JWT = {
 }
 
 STRIPE_API_KEY = os.getenv('STRIPE_API_KEY')
+
+BASE_URL = "http://127.0.0.1:8000"

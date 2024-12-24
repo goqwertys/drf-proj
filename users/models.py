@@ -143,6 +143,13 @@ class Payment(models.Model):
     def get_service(self):
         return self.course or self.lesson
 
+    def update_status(self, status):
+        if status in dict(self.STATUS_CHOICES):
+            self.status = status
+            self.save()
+        else:
+            raise ValueError(f'Invalid status {status}')
+
     class Meta:
         verbose_name = 'Payment'
         verbose_name_plural = 'Payments'

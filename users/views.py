@@ -1,7 +1,6 @@
-import stripe
-from django.conf import settings
 from django.urls import reverse
 from django.views.generic import TemplateView
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.generics import ListAPIView, CreateAPIView
 from rest_framework import viewsets
@@ -12,6 +11,7 @@ from .filters import PaymentFilter
 from .models import User, Payment
 from .permissions import IsOwnerOrReadOnly
 from .serializers import PaymentSerializer, UserSerializer, UserUpdateSerializer, UserProfileSerializer
+from .services import StripeService
 
 
 class PaymentListView(ListAPIView):
@@ -42,35 +42,23 @@ class PaymentCreateAPIView(CreateAPIView):
     queryset = Payment.objects.all()
 
     def perform_create(self, serializer):
-        # Creating stripe.Product
+
+        if not self.request.user.is_authenticated:
+            raise PermissionDenied("You must be logged in to create a payment.")
+        serializer.validated_data['user'] = self.request.user
+
         payment = serializer.save()
 
-        stripe.api_key = settings.STRIPE_API_KEY
+        if payment.method == 'CRD':
+            stripe_service = StripeService()
+            success_url = self.request.build_absolute_uri(reverse('users:successful-payment'))
+            stripe_service.handle_payment(payment, success_url)
+        elif payment.method == 'CSH':
+            payment.status = 'success'
+            payment.save()
+        else:
+            raise ValueError(f'Invalid payment method: {payment.method}')
 
-        stripe_product = stripe.Product.create(
-            name=payment.course.name,
-            description=payment.course.description
-        )
-        # Creating Stripe.Price
-        stripe_price = stripe.Price.create(
-            currency="usd",
-            unit_amount=int(payment.course.amount * 100),
-            product=stripe_product
-        )
-        # Creating stripe.Session
-        session = stripe.checkout.Session.create(
-            success_url=self.request.build_absolute_uri(reverse('users:successful-payment')),
-            line_items=[
-                {
-                    "price": stripe_price,
-                    "quantity": 1
-                }
-            ],
-            mode="payment",
-        )
-        payment.link = session.url
-        payment.session_id = session.id
-        payment.save()
 
 
 class SuccessPaymentView(TemplateView):
