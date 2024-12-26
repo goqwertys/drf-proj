@@ -39,6 +39,7 @@ class CourseSerializer(serializers.ModelSerializer):
             'lesson_count',
             'lessons',
             'owner',
-            'id_subscribed'
+            'id_subscribed',
+            'amount'
         ]
         validators = [NoExternalLinkValidator(fields='description')]

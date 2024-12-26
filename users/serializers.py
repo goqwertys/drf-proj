@@ -28,19 +28,6 @@ class UserUpdateSerializer(serializers.ModelSerializer):
 
 
 class PaymentSerializer(serializers.ModelSerializer):
-    course = serializers.SerializerMethodField()
-    lesson = serializers.SerializerMethodField()
-
-    def get_course(self, obj):
-        if obj.course:
-            return CourseSerializer(obj.course).data
-        return None
-
-    def get_lesson(self, obj):
-        if obj.lesson:
-            return LessonSerializer(obj.lesson).data
-        return None
-
     class Meta:
         model = Payment
-        fields = ['user', 'date', 'course', 'lesson', 'amount', 'method']
+        fields = ['date', 'course', 'lesson', 'amount', 'method', 'session_id', 'link']

@@ -1,3 +1,6 @@
+from django.utils.decorators import method_decorator
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import viewsets, status
 from rest_framework.generics import (
     CreateAPIView,
@@ -73,6 +76,38 @@ class LessonDestroyApiView(DestroyAPIView):
 
 
 class SubscriptionAPIView(APIView):
+    @swagger_auto_schema(
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            required=['course_id'],
+            properties={
+                'course_id': openapi.Schema(
+                    type=openapi.TYPE_INTEGER,
+                    description='course ID for subscription'
+                ),
+            }
+        ),
+        responses={
+            200: openapi.Response(
+                description="Successful operation",
+                examples={
+                    "application/json": {
+                        "message": "Subscription added"
+                    }
+                }
+            ),
+            400: openapi.Response(
+                description="Course not found",
+                examples={
+                    "application/json": {
+                        "detail": "Not found."
+                    }
+                }
+            )
+
+        },
+        operation_description="Subscribing to or unsubscribing from a course"
+    )
     def post(self, request, *args, **kwargs):
         user = request.user
         course_id = request.data.get('course_id')

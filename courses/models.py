@@ -18,6 +18,12 @@ class Course(models.Model):
         blank=True,
         null=True,
     )
+    amount = models.DecimalField(
+        verbose_name='amount',
+        max_digits=10,
+        decimal_places=2,
+        default=0
+    )
     changed_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -27,6 +33,22 @@ class Course(models.Model):
         blank=True,
         null=True,
         verbose_name='owner'
+    )
+
+    stripe_product_id = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        verbose_name='Stripe product ID',
+        help_text='Stripe product ID'
+    )
+
+    stripe_price_id = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        verbose_name="Stripe price ID",
+        help_text='Stripe price ID'
     )
 
     class Meta:

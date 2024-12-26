@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
+from django.db.models import URLField, CharField
 from phonenumber_field.modelfields import PhoneNumberField
 from rest_framework.exceptions import ValidationError
 
@@ -69,16 +70,60 @@ class Payment(models.Model):
         ('CRD', 'By card'),
         ('CSH', 'By cash')
     ]
-    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='user')
-    date = models.DateTimeField()
-    course = models.ForeignKey('courses.Course', on_delete=models.CASCADE, null=True, blank=True)
-    lesson = models.ForeignKey('courses.Lesson', on_delete=models.CASCADE, null=True, blank=True)
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('success', 'Success'),
+        ('failed', 'Failed'),
+    ]
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name='user',
+        help_text='Please specify user'
+    )
+    date = models.DateTimeField(auto_now=True)
+    course = models.ForeignKey(
+        'courses.Course',
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True
+    )
+    lesson = models.ForeignKey(
+        'courses.Lesson',
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True
+    )
+    amount = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=0
+    )
     method = models.CharField(
         max_length=3,
         choices=METHOD_CHOISES,
         default='CRD',
         verbose_name='payment method'
+    )
+    session_id = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        verbose_name='Session ID',
+        help_text='Please specify session id'
+    )
+    link = URLField(
+        max_length=500,
+        blank=True,
+        null=True,
+        verbose_name='Payment link',
+        help_text='Please specify payment link'
+    )
+    status = CharField(
+        max_length=10,
+        choices=STATUS_CHOICES,
+        default='pending',
+        verbose_name='Payment status'
     )
 
     def __str__(self):
@@ -98,6 +143,13 @@ class Payment(models.Model):
     def get_service(self):
         return self.course or self.lesson
 
+    def update_status(self, status):
+        if status in dict(self.STATUS_CHOICES):
+            self.status = status
+            self.save()
+        else:
+            raise ValueError(f'Invalid status {status}')
+
     class Meta:
-        verbose_name = 'payment'
-        verbose_name_plural = 'payments'
+        verbose_name = 'Payment'
+        verbose_name_plural = 'Payments'
