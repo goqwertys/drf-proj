@@ -51,6 +51,7 @@ class Course(models.Model):
         help_text='Stripe price ID'
     )
 
+
     class Meta:
         verbose_name = 'Course'
         verbose_name_plural = 'Courses'
@@ -77,6 +78,12 @@ class Lesson(models.Model):
     video_url = models.URLField(
         blank=True,
         null=True
+    )
+    amount = models.DecimalField(
+        verbose_name='amount',
+        max_digits=10,
+        decimal_places=2,
+        default=0
     )
     changed_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)

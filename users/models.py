@@ -138,6 +138,13 @@ class Payment(models.Model):
 
     def save(self, *args, **kwargs):
         self.full_clean()
+
+        if not self.amount:
+            if self.course:
+                self.amount = self.course.amount
+            elif self.lesson:
+                self.amount = self.lesson.amount
+
         super().save(*args, **kwargs)
 
     def get_service(self):
