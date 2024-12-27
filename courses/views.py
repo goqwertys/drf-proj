@@ -17,6 +17,7 @@ from courses.models import Course, Lesson, Subscription
 from courses.paginators import Paginator
 from courses.serializers import CourseSerializer, LessonSerializer
 from users.permissions import IsModerator, IsOwner
+from .tasks import hello
 
 
 class CourseViewSet(viewsets.ModelViewSet):
@@ -124,6 +125,7 @@ class SubscriptionAPIView(APIView):
             )
             message = 'Subscription added'
 
+        hello.delay()
         return Response(
             {'message': message},
             status=status.HTTP_200_OK
