@@ -39,7 +39,7 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_FILTER_BACKENDS': (
-            'django_filters.rest_framework.DjangoFilterBackend',
+        'django_filters.rest_framework.DjangoFilterBackend',
     ),
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
@@ -145,3 +145,12 @@ EMAIL_HOST_PASSWORD = os.getenv('SMTP_PASSWORD')
 DEFAULT_FROM_EMAIL = os.getenv('SMTP_USERNAME')
 EMAIL_USE_TLS = False
 EMAIL_USE_SSL = True
+
+BLOCK_PERIOD_DAYS = 30
+
+CELERY_BEAT_SCHEDULE = {
+    'block_inactive_users': {
+        'task': 'courses.tasks.block_inactive_users',
+        'schedule': timedelta(days=1),
+    },
+}

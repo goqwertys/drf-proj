@@ -51,13 +51,13 @@ class Course(models.Model):
         help_text='Stripe price ID'
     )
 
-
     class Meta:
         verbose_name = 'Course'
         verbose_name_plural = 'Courses'
 
     def __str__(self):
         return self.name
+
 
 class Lesson(models.Model):
     course = models.ForeignKey(
@@ -97,8 +97,8 @@ class Lesson(models.Model):
     )
 
     class Meta:
-        verbose_name='Lesson'
-        verbose_name_plural='Lessons'
+        verbose_name = 'Lesson'
+        verbose_name_plural = 'Lessons'
 
     def __str__(self):
         return self.title

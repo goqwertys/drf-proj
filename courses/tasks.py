@@ -1,8 +1,6 @@
 from celery import shared_task
-from config.settings import EMAIL_HOST_USER
-from django.core.mail import send_mail
-
-from courses.models import Course, Subscription
+from .services import send_course_update_notifications as send_notifications
+from .services import block_inactive_users as block_users
 
 
 @shared_task
@@ -10,14 +8,15 @@ def hello():
     """ Test task """
     print("Hello")
 
+
 @shared_task
 def send_course_update_notifications(course_id):
-    course = Course.objects.get(id=course_id)
-    subscriptions = Subscription.objects.filter(course=course, is_active=True)
+    """ Celery task for sending notifications. """
+    send_notifications(course_id)
 
-    for subscription in subscriptions:
-        user = subscription.user
-        subject = f'Course {subscription.course.name} updated'
-        message = f'The course {subscription.course.name} you are subscribed to has updated'
-        send_mail(subject, message, EMAIL_HOST_USER, [user.email])
-        print(f'message sent to {user.email}')
+
+@shared_task
+def block_inactive_users():
+    """ Celery task to block inactive users. """
+    count = block_users()
+    print(f'{count} users blocked.')
