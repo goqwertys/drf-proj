@@ -58,6 +58,7 @@ class Course(models.Model):
     def __str__(self):
         return self.name
 
+
 class Lesson(models.Model):
     course = models.ForeignKey(
         Course,
@@ -78,6 +79,12 @@ class Lesson(models.Model):
         blank=True,
         null=True
     )
+    amount = models.DecimalField(
+        verbose_name='amount',
+        max_digits=10,
+        decimal_places=2,
+        default=0
+    )
     changed_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -90,8 +97,8 @@ class Lesson(models.Model):
     )
 
     class Meta:
-        verbose_name='Lesson'
-        verbose_name_plural='Lessons'
+        verbose_name = 'Lesson'
+        verbose_name_plural = 'Lessons'
 
     def __str__(self):
         return self.title

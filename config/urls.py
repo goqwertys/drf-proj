@@ -6,16 +6,16 @@ from drf_yasg import openapi
 
 
 schema_view = get_schema_view(
-   openapi.Info(
-      title="My Demo LMS-System API",
-      default_version='v1',
-      description="Simple learning management system.",
-      terms_of_service="https://www.google.com/policies/terms/",
-      contact=openapi.Contact(email="goqwertys@gmail.com", name="Author"),
-      license=openapi.License(name="MIT License"),
-   ),
-   public=True,
-   permission_classes=(permissions.AllowAny,),
+    openapi.Info(
+        title="My Demo LMS-System API",
+        default_version='v1',
+        description="Simple learning management system.",
+        terms_of_service="https://www.google.com/policies/terms/",
+        contact=openapi.Contact(email="goqwertys@gmail.com", name="Author"),
+        license=openapi.License(name="MIT License"),
+    ),
+    public=True,
+    permission_classes=(permissions.AllowAny,),
 )
 
 urlpatterns = [

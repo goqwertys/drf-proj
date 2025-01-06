@@ -1,6 +1,7 @@
 import re
 from rest_framework import serializers
 
+
 class NoExternalLinkValidator:
     YOUTUBE_DOMAIN = "youtube.com"
     URL_REGEX = re.compile(
@@ -24,7 +25,6 @@ class NoExternalLinkValidator:
                 raise serializers.ValidationError(
                     {field: f'Links to third-party resources other than {self.YOUTUBE_DOMAIN} are prohibited'}
                 )
-
 
     def is_youtube_link(self, url):
         return self.YOUTUBE_DOMAIN in url.lower()

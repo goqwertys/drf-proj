@@ -29,6 +29,7 @@ class UserManager(BaseUserManager):
 
         return self.create_user(email, password, **extra_fields)
 
+
 class User(AbstractUser):
     username = None
     email = models.EmailField(unique=True, verbose_name='email')
@@ -138,6 +139,13 @@ class Payment(models.Model):
 
     def save(self, *args, **kwargs):
         self.full_clean()
+
+        if not self.amount:
+            if self.course:
+                self.amount = self.course.amount
+            elif self.lesson:
+                self.amount = self.lesson.amount
+
         super().save(*args, **kwargs)
 
     def get_service(self):

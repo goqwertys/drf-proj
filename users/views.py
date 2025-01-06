@@ -28,6 +28,7 @@ class UserCreateAPIView(CreateAPIView):
     queryset = User.objects.all()
     permission_classes = (AllowAny,)
 
+
 class UserProfileViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     permission_classes = [IsOwnerOrReadOnly]
@@ -36,6 +37,7 @@ class UserProfileViewSet(viewsets.ModelViewSet):
         if self.action in ['update', 'partial_update']:
             return UserUpdateSerializer
         return UserProfileSerializer
+
 
 class PaymentCreateAPIView(CreateAPIView):
     serializer_class = PaymentSerializer
@@ -58,7 +60,6 @@ class PaymentCreateAPIView(CreateAPIView):
             payment.save()
         else:
             raise ValueError(f'Invalid payment method: {payment.method}')
-
 
 
 class SuccessPaymentView(TemplateView):

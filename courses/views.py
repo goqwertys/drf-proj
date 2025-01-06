@@ -1,4 +1,3 @@
-from django.utils.decorators import method_decorator
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import viewsets, status
@@ -18,6 +17,7 @@ from courses.models import Course, Lesson, Subscription
 from courses.paginators import Paginator
 from courses.serializers import CourseSerializer, LessonSerializer
 from users.permissions import IsModerator, IsOwner
+from .tasks import send_course_update_notifications
 
 
 class CourseViewSet(viewsets.ModelViewSet):
@@ -38,6 +38,16 @@ class CourseViewSet(viewsets.ModelViewSet):
         course = serializer.save()
         course.owner = self.request.user
         course.save()
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        send_course_update_notifications.delay(instance.id)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class LessonCreateApiView(CreateAPIView):
@@ -124,7 +134,6 @@ class SubscriptionAPIView(APIView):
                 course=course_item
             )
             message = 'Subscription added'
-
         return Response(
             {'message': message},
             status=status.HTTP_200_OK

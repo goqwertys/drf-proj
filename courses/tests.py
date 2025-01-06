@@ -7,6 +7,7 @@ from courses.models import Course, Lesson, Subscription
 
 User = get_user_model()
 
+
 class LessonTestCase(APITestCase):
     def setUp(self):
         self.user = User.objects.create(
@@ -120,6 +121,7 @@ class LessonTestCase(APITestCase):
         response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(Lesson.objects.count(), 0)
+
 
 class SubscriptionAPITestCase(APITestCase):
     def setUp(self):

@@ -4,6 +4,7 @@ from django.utils import timezone
 from courses.models import Course, Lesson
 from users.models import User, Payment
 
+
 class Command(BaseCommand):
     help = 'Create sample payments, users, courses, and lessons'
 

@@ -1,6 +1,5 @@
 import stripe
 from django.conf import settings
-from django.urls import reverse
 
 
 class StripeService:
@@ -51,6 +50,7 @@ class StripeService:
     def handle_payment(self, payment, success_url):
         """ Handle payment in stripe """
         service = payment.get_service()
+        print(f'Service price: {service.amount}')
         if not service:
             raise ValueError('Payment must be associated with a course or lesson.')
 
