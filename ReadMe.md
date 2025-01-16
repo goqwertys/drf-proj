@@ -7,8 +7,8 @@ This project uses Docker Compose to run several services, including Django, Post
  - [Installing Docker Compose](https://docs.docker.com/compose/install/)  
 2. #### Clone the repository:  
 	```
-	git clone <ваш-репозиторий>
-	cd <ваш-репозиторий>
+	https://github.com/goqwertys/drf-proj.git
+	cd my-drf-project
 	```
  3. #### Create a .env file  
   
