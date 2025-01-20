@@ -1,6 +1,11 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 
+NULLABLE = {
+    'blank': True,
+    'null': True
+}
+
 
 class Course(models.Model):
     name = models.CharField(
@@ -9,14 +14,12 @@ class Course(models.Model):
     )
     description = models.TextField(
         verbose_name='description',
-        blank=True,
-        null=True,
+        **NULLABLE
     )
     preview = models.ImageField(
         upload_to='courses/preview',
         verbose_name='Course preview',
-        blank=True,
-        null=True,
+        **NULLABLE
     )
     amount = models.DecimalField(
         verbose_name='amount',
@@ -30,25 +33,22 @@ class Course(models.Model):
     owner = models.ForeignKey(
         get_user_model(),
         on_delete=models.SET_NULL,
-        blank=True,
-        null=True,
-        verbose_name='owner'
+        verbose_name='owner',
+        **NULLABLE
     )
 
     stripe_product_id = models.CharField(
         max_length=255,
-        blank=True,
-        null=True,
         verbose_name='Stripe product ID',
-        help_text='Stripe product ID'
+        help_text='Stripe product ID',
+        **NULLABLE
     )
 
     stripe_price_id = models.CharField(
         max_length=255,
-        blank=True,
-        null=True,
         verbose_name="Stripe price ID",
-        help_text='Stripe price ID'
+        help_text='Stripe price ID',
+        **NULLABLE
     )
 
     class Meta:
@@ -72,12 +72,10 @@ class Lesson(models.Model):
     preview = models.ImageField(
         upload_to='courses/preview',
         verbose_name='Lesson preview',
-        blank=True,
-        null=True,
+        **NULLABLE
     )
     video_url = models.URLField(
-        blank=True,
-        null=True
+        **NULLABLE
     )
     amount = models.DecimalField(
         verbose_name='amount',
@@ -91,9 +89,8 @@ class Lesson(models.Model):
     owner = models.ForeignKey(
         get_user_model(),
         on_delete=models.SET_NULL,
-        blank=True,
-        null=True,
-        verbose_name='owner'
+        verbose_name='owner',
+        **NULLABLE
     )
 
     class Meta:
