@@ -156,7 +156,7 @@ After launching the project, you can check the functionality of each service.
       ```
       docker-compose logs celery_beat
       ```
-    - Убедитесь, что в логах нет ошибок и Celery Beat успешно запущен.
+    - Make sure there are no errors in the logs and Celery Beat has started successfully.
 ***  
 ### Project management commands:
    - **Re-creating containers**:
