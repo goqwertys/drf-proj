@@ -1,0 +1,126 @@
+from django.db import models
+from django.contrib.auth import get_user_model
+
+NULLABLE = {
+    'blank': True,
+    'null': True
+}
+
+
+class Course(models.Model):
+    name = models.CharField(
+        max_length=150,
+        verbose_name='course name'
+    )
+    description = models.TextField(
+        verbose_name='description',
+        **NULLABLE
+    )
+    preview = models.ImageField(
+        upload_to='courses/preview',
+        verbose_name='Course preview',
+        **NULLABLE
+    )
+    amount = models.DecimalField(
+        verbose_name='amount',
+        max_digits=10,
+        decimal_places=2,
+        default=0
+    )
+    changed_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    owner = models.ForeignKey(
+        get_user_model(),
+        on_delete=models.SET_NULL,
+        verbose_name='owner',
+        **NULLABLE
+    )
+
+    stripe_product_id = models.CharField(
+        max_length=255,
+        verbose_name='Stripe product ID',
+        help_text='Stripe product ID',
+        **NULLABLE
+    )
+
+    stripe_price_id = models.CharField(
+        max_length=255,
+        verbose_name="Stripe price ID",
+        help_text='Stripe price ID',
+        **NULLABLE
+    )
+
+    class Meta:
+        verbose_name = 'Course'
+        verbose_name_plural = 'Courses'
+
+    def __str__(self):
+        return self.name
+
+
+class Lesson(models.Model):
+    course = models.ForeignKey(
+        Course,
+        related_name='lessons',
+        on_delete=models.CASCADE
+    )
+    title = models.CharField(
+        max_length=150,
+        verbose_name='Lesson title'
+    )
+    preview = models.ImageField(
+        upload_to='courses/preview',
+        verbose_name='Lesson preview',
+        **NULLABLE
+    )
+    video_url = models.URLField(
+        **NULLABLE
+    )
+    amount = models.DecimalField(
+        verbose_name='amount',
+        max_digits=10,
+        decimal_places=2,
+        default=0
+    )
+    changed_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    owner = models.ForeignKey(
+        get_user_model(),
+        on_delete=models.SET_NULL,
+        verbose_name='owner',
+        **NULLABLE
+    )
+
+    class Meta:
+        verbose_name = 'Lesson'
+        verbose_name_plural = 'Lessons'
+
+    def __str__(self):
+        return self.title
+
+
+class Subscription(models.Model):
+    user = models.ForeignKey(
+        get_user_model(),
+        on_delete=models.CASCADE,
+        verbose_name='user'
+    )
+    course = models.ForeignKey(
+        Course,
+        on_delete=models.CASCADE,
+        verbose_name='course'
+    )
+    is_active = models.BooleanField(
+        default=True,
+        verbose_name='is active'
+    )
+
+    class Meta:
+        verbose_name = 'Subscription'
+        verbose_name_plural = 'Subscriptions'
+        unique_together = ('user', 'course')
+
+    def __str__(self):
+        return f'{self.user.email} subscriber to {self.course.name}'
